@@ -28,11 +28,11 @@ def bankingStatusFromTaskStatuses(taskStatusesSet):
 
 
 def checkForAnomalies(row):
-    if row['Passed Auto GIACT'] == 'True' and row['Failed Auto GIACT'] == 'True':
+    if row['Passed Auto GIACT'] == 'Yes' and row['Failed Auto GIACT'] == 'Yes':
         giactPassAndFail.add(row['Customer Account Toast Guid'])
 
     taskStatusesSet = set(row['Banking Task Statuses'].split(','))
-    if row['Passed Auto GIACT'] == 'True' and 'COMPLETED' not in taskStatusesSet:
+    if row['Passed Auto GIACT'] == 'Yes' and 'COMPLETED' not in taskStatusesSet:
         giactPassedButTaskNotCompleted[row['Customer Account Toast Guid']] = row['Banking Task Statuses']
 
 
@@ -102,9 +102,9 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
         # populate giact pass and giact fail columns
         if cxGuid in rxToGiactResults:
             if 'pass' in rxToGiactResults[cxGuid]:
-                row['Passed Auto GIACT'] = 'True'
+                row['Passed Auto GIACT'] = 'Yes'
             if 'fail' in rxToGiactResults[cxGuid]:
-                row['Failed Auto GIACT'] = 'True'
+                row['Failed Auto GIACT'] = 'Yes'
 
         # populate banking status column
         # populate customer-task-service values column
