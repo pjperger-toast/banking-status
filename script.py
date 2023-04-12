@@ -38,18 +38,27 @@ def checkForAnomalies(row):
 
 inputFile = 'AlleCommProspectAccountsWithGUIDS - explore_gtm all_opps 2023-04-11T1016.csv'
 bankingTaskStatusFile = 'provide-location-banking-info most recent revision.csv'  # run query in snowflake-query and export to CSV
+goliveTaskStatusFile = 'self-service-leave-test-mode most recent revision.csv'  # run query in snowflake-query and export to CSV
 giactResultsFile = 'giact-results-ytd-2-non-deduped.csv'  # run query in splunk-query and export to CSV
 
 rxToBankingStatus = {}
+rxToLiveStatus = {}
 rxToGiactResults = {}
 
 # create a mapping of Rx GUID to all Task Statuses it has experienced
-# task statuses are lexicographically sorted, i.e. not sorted by order of occurrence
+# task statuses (if more than one) are lexicographically sorted, i.e. not sorted by order of occurrence
 with open(bankingTaskStatusFile, mode='r') as infile:
     reader = csv.DictReader(infile)
     next(reader)
     for row in reader:
         rxToBankingStatus[row['RESTAURANTID']] = row['STATUSES']
+
+# create a mapping of Rx GUID to current go-live status
+with open(goliveTaskStatusFile, mode='r') as infile:
+    reader = csv.DictReader(infile)
+    next(reader)
+    for row in reader:
+        rxToLiveStatus[row['RESTAURANTID']] = row['STATUSES']
 
 # create a mapping of Rx GUID to giact pass and/or fail events
 with open(giactResultsFile, mode='r') as infile:
@@ -71,7 +80,8 @@ writerFieldNames = ['Customer Account Name',
                     'Passed Auto GIACT',
                     'Failed Auto GIACT',
                     'Banking Status',
-                    'Banking Task Statuses'
+                    'Banking Task Statuses',
+                    'Go Live Status'
                     ]
 
 with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
@@ -85,6 +95,7 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
         row['Failed Auto GIACT'] = ""
         row['Banking Status'] = ""
         row['Banking Task Statuses'] = ""
+        row['Go Live Status'] = ""
 
         cxGuid = row['Customer Account Toast Guid']
 
@@ -102,6 +113,10 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
             bankingStatusSet = set(bankingStatus.split(','))
             row['Banking Status'] = bankingStatusFromTaskStatuses(bankingStatusSet)
             row['Banking Task Statuses'] = rxToBankingStatus[cxGuid]
+
+        # populate go live status column
+        if cxGuid in rxToLiveStatus:
+            row['Go Live Status'] = rxToLiveStatus[cxGuid]
 
         checkForAnomalies(row)
         writer.writerow(row)
