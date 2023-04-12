@@ -117,6 +117,12 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
         # populate go live status column
         if cxGuid in rxToLiveStatus:
             row['Go Live Status'] = rxToLiveStatus[cxGuid]
+            # If the go-live status is completed, set "Banking Status" to Completed
+            # If they're live, they must have banking in place
+            if row['Go Live Status'] == 'COMPLETED':
+                tempSet = set()
+                tempSet.add('COMPLETED')
+                row['Banking Status'] = bankingStatusFromTaskStatuses(tempSet)
 
         checkForAnomalies(row)
         writer.writerow(row)
