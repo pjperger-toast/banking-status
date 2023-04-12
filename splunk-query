@@ -4,4 +4,4 @@
 | table request_id, identity_confirmation_status, _time, merchantId, bankAccountId | eval res=if('identity_confirmation_status'="PASSED_AUTOMATICALLY","pass",if(
           ('identity_confirmation_status' != "PASSED_AUTOMATICALLY"
           AND 'identity_confirmation_status' != "UNSPECIFIED"
-          AND 'identity_confirmation_status' != "PASSED_MANUALLY"),"fail","no_status")) | where res!="no_status" | dedup merchantId
+          AND 'identity_confirmation_status' != "PASSED_MANUALLY"),"fail","no_status")) | where res!="no_status"
