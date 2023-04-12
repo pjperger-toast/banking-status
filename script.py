@@ -37,19 +37,19 @@ def checkForAnomalies(row):
 
 
 inputFile = 'AlleCommProspectAccountsWithGUIDS - explore_gtm all_opps 2023-04-11T1016.csv'
-taskStatusFile = 'Copy of 2023-04-11 11_12am.csv'  # run query in snowflake-query and export to CSV
+bankingTaskStatusFile = 'provide-location-banking-info most recent revision.csv'  # run query in snowflake-query and export to CSV
 giactResultsFile = 'giact-results-ytd-2-non-deduped.csv'  # run query in splunk-query and export to CSV
 
-taskToStatus = {}
-giactResults = {}
+rxToBankingStatus = {}
+rxToGiactResults = {}
 
 # create a mapping of Rx GUID to all Task Statuses it has experienced
 # task statuses are lexicographically sorted, i.e. not sorted by order of occurrence
-with open(taskStatusFile, mode='r') as infile:
+with open(bankingTaskStatusFile, mode='r') as infile:
     reader = csv.DictReader(infile)
     next(reader)
     for row in reader:
-        taskToStatus[row['RESTAURANTID']] = row['STATUSES']
+        rxToBankingStatus[row['RESTAURANTID']] = row['STATUSES']
 
 # create a mapping of Rx GUID to giact pass and/or fail events
 with open(giactResultsFile, mode='r') as infile:
@@ -57,9 +57,9 @@ with open(giactResultsFile, mode='r') as infile:
     next(reader)
     for row in reader:
         # res == 'pass' or 'fail'
-        if row['merchantId'] not in giactResults.keys():
-            giactResults[row['merchantId']] = set()
-        giactResults[row['merchantId']].add(row['res'])
+        if row['merchantId'] not in rxToGiactResults.keys():
+            rxToGiactResults[row['merchantId']] = set()
+        rxToGiactResults[row['merchantId']].add(row['res'])
 
 results = "results.csv"
 writerFieldNames = ['Customer Account Name',
@@ -89,19 +89,19 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
         cxGuid = row['Customer Account Toast Guid']
 
         # populate giact pass and giact fail columns
-        if cxGuid in giactResults:
-            if 'pass' in giactResults[cxGuid]:
+        if cxGuid in rxToGiactResults:
+            if 'pass' in rxToGiactResults[cxGuid]:
                 row['Passed Auto GIACT'] = 'True'
-            if 'fail' in giactResults[cxGuid]:
+            if 'fail' in rxToGiactResults[cxGuid]:
                 row['Failed Auto GIACT'] = 'True'
 
         # populate banking status column
         # populate customer-task-service values column
-        if cxGuid in taskToStatus:
-            taskStatuses = taskToStatus[cxGuid]
-            taskStatusesSet = set(taskStatuses.split(','))
-            row['Banking Status'] = bankingStatusFromTaskStatuses(taskStatusesSet)
-            row['Banking Task Statuses'] = taskToStatus[cxGuid]
+        if cxGuid in rxToBankingStatus:
+            bankingStatus = rxToBankingStatus[cxGuid]
+            bankingStatusSet = set(bankingStatus.split(','))
+            row['Banking Status'] = bankingStatusFromTaskStatuses(bankingStatusSet)
+            row['Banking Task Statuses'] = rxToBankingStatus[cxGuid]
 
         checkForAnomalies(row)
         writer.writerow(row)
