@@ -6,8 +6,8 @@ from datetime import datetime
 # if giact both passed and failed for a GUID
 giactPassAndFail = set()
 
-# giact passed but no COMPLETED in task statuses
-giactPassedButTaskNotCompleted = {}
+# giact passed but no COMPLETED in banking task status
+giactPassedButBankingTaskNotCompleted = {}
 
 # go-live task is COMPLETED but booked to workable days is less than zero
 liveButBookedToWorkableMissing = {}
@@ -40,7 +40,7 @@ def checkForAnomalies(row):
 
     taskStatusesSet = set(row['Banking Task Statuses'].split(','))
     if row['Passed Auto GIACT'] == 'Yes' and 'COMPLETED' not in taskStatusesSet:
-        giactPassedButTaskNotCompleted[row['Customer Account Toast Guid']] = row['Banking Task Statuses']
+        giactPassedButBankingTaskNotCompleted[row['Customer Account Toast Guid']] = row['Banking Task Statuses']
 
     if row['Go Live Status'] == 'COMPLETED' and int(row['Booked to Workable Days']) < 0:
         liveButBookedToWorkableMissing[row['Customer Account Toast Guid']] = row['Booked to Workable Days']
@@ -168,8 +168,8 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
 print("GIACT PASS AND FAIL\n---")
 print(giactPassAndFail, "\n")
 
-print("GIACT PASS BUT TASK NOT COMPLETED\n---")
-print(giactPassedButTaskNotCompleted, "\n")
+print("GIACT PASS BUT BANKING TASK NOT COMPLETED\n---")
+print(giactPassedButBankingTaskNotCompleted, "\n")
 
 print("LIVE BUT BOOKED TO WORKABLE MISSING\n---")
 print(liveButBookedToWorkableMissing, "\n")
