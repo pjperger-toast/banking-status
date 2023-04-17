@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import csv
+from datetime import datetime
 
 # if giact both passed and failed for a GUID
 giactPassAndFail = set()
@@ -113,6 +114,10 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
         row['Banking Task Statuses'] = ""
         row['Go Live Status'] = ""
         row['Booked to Workable Days'] = ""
+
+        # convert opportunity creation date to google sheets friendly format
+        oppDate = datetime.strptime(row['Opportunities Opportunity Created Date'], "%Y-%m-%d").strftime("%m/%d/%Y")
+        row['Opportunities Opportunity Created Date'] = oppDate
 
         rxGuid = row['Customer Account Toast Guid']
 
