@@ -36,10 +36,10 @@ def checkForAnomalies(row):
         giactPassedButTaskNotCompleted[row['Customer Account Toast Guid']] = row['Banking Task Statuses']
 
 
-inputFile = 'AlleCommProspectAccountsWithGUIDS - explore_gtm all_opps 2023-04-11T1016.csv'
-bankingTaskStatusFile = 'provide-location-banking-info most recent revision.csv'  # run query in snowflake-query and export to CSV
-goliveTaskStatusFile = 'self-service-leave-test-mode most recent revision.csv'  # run query in snowflake-query and export to CSV
-giactResultsFile = 'giact-results-ytd-2-non-deduped.csv'  # run query in splunk-query and export to CSV
+inputFile = 'data/AlleCommProspectAccountsWithGUIDS - explore_gtm all_opps 2023-04-11T1016.csv'
+bankingTaskStatusFile = 'data/provide-location-banking-info most recent revision.csv'  # run data/queries/snowflake/provide-location-banking-info--most-recent-revision and export to CSV
+goliveTaskStatusFile = 'data/self-service-leave-test-mode most recent revision.csv'  # run data/queries/snowflake/self-service-leave-test-mode--most-recent-revision and export to CSV
+giactResultsFile = 'data/giact-results-ytd-2-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
 
 rxToBankingStatus = {}
 rxToLiveStatus = {}

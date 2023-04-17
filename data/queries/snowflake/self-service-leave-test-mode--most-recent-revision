@@ -1,0 +1,14 @@
+SELECT
+    t.account_toast_guid AS restaurantId,
+    t.task_status_new AS statuses,
+    t.task_last_updated AS last_updated,
+    revision
+FROM
+    TOAST.SOURCE_TOAST_ORDERS.task_view_current AS t
+WHERE
+    t.task_name = 'self-service-leave-test-mode' QUALIFY RANK() OVER(
+        PARTITION BY t.account_toast_guid,
+        task_name
+        ORDER by
+            REVISION DESC
+    ) = 1
