@@ -114,26 +114,26 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
         row['Go Live Status'] = ""
         row['Booked to Workable Days'] = ""
 
-        cxGuid = row['Customer Account Toast Guid']
+        rxGuid = row['Customer Account Toast Guid']
 
         # populate giact pass and giact fail columns
-        if cxGuid in rxToGiactResults:
-            if 'pass' in rxToGiactResults[cxGuid]:
+        if rxGuid in rxToGiactResults:
+            if 'pass' in rxToGiactResults[rxGuid]:
                 row['Passed Auto GIACT'] = 'Yes'
-            if 'fail' in rxToGiactResults[cxGuid]:
+            if 'fail' in rxToGiactResults[rxGuid]:
                 row['Failed Auto GIACT'] = 'Yes'
 
         # populate banking status column
         # populate customer-task-service values column
-        if cxGuid in rxToBankingStatus:
-            bankingStatus = rxToBankingStatus[cxGuid]
+        if rxGuid in rxToBankingStatus:
+            bankingStatus = rxToBankingStatus[rxGuid]
             bankingStatusSet = set(bankingStatus.split(','))
             row['Banking Status'] = bankingStatusFromTaskStatuses(bankingStatusSet)
-            row['Banking Task Statuses'] = rxToBankingStatus[cxGuid]
+            row['Banking Task Statuses'] = rxToBankingStatus[rxGuid]
 
         # populate go live status column
-        if cxGuid in rxToLiveStatus:
-            row['Go Live Status'] = rxToLiveStatus[cxGuid]
+        if rxGuid in rxToLiveStatus:
+            row['Go Live Status'] = rxToLiveStatus[rxGuid]
             # If the go-live status is completed, set "Banking Status" to Completed
             # If they're live, they must have banking in place
             if row['Go Live Status'] == 'COMPLETED':
@@ -142,8 +142,8 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
                 row['Banking Status'] = bankingStatusFromTaskStatuses(tempSet)
 
         # populate booked to workable days column
-        if cxGuid in rxToBookedToWorkableDays:
-            row['Booked to Workable Days'] = rxToBookedToWorkableDays[cxGuid]
+        if rxGuid in rxToBookedToWorkableDays:
+            row['Booked to Workable Days'] = rxToBookedToWorkableDays[rxGuid]
         else:
             row['Booked to Workable Days'] = -1
 
