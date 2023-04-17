@@ -1,0 +1,43 @@
+-- BOOKED TO WORKABLE STATS
+-- WITH baseQuery AS (
+--     SELECT
+--         customer.project_install_type_bucket AS install_type,
+--         timediff(day, stage_thirteen, stage_sixteen) AS booked_to_workable_days
+--     FROM
+--         TOAST.GTM.OPPORTUNITY_STAGE_TIMING ost
+--         INNER JOIN TOAST.GTM.new_business_opportunity AS opp ON ost.salesforce_opportunityid = opp.salesforce_opportunityid
+--         INNER JOIN toast.analytics_core.customer AS customer ON opp.customer_id = customer.customer_id
+--     WHERE
+--         opp.ecommerce_order_reference_id IS NOT NULL
+--         AND stage_thirteen IS NOT NULL
+--         AND stage_sixteen IS NOT NULL
+--         AND closed_lost_opportunity = false --AND booked_to_workable_days < ##
+-- )
+-- SELECT
+--     install_type,
+--     count(install_type),
+--     avg(booked_to_workable_days) AS average,
+--     median(booked_to_workable_days) AS median_days,
+--     mode(booked_to_workable_days) AS mode_days
+-- FROM
+--     baseQuery
+-- WHERE
+--     install_type IS NOT NULL
+-- GROUP BY
+--     install_type
+-- BOOKED TO WORKABLE BY ACCOUNT
+SELECT
+    --customer.customer_id as customerId,
+    cl.account_toast_guid AS restaurantId,
+    customer.project_install_type_bucket AS install_type,
+    timediff(day, stage_thirteen, stage_sixteen) AS booked_to_workable_days
+FROM
+    TOAST.GTM.OPPORTUNITY_STAGE_TIMING AS ost
+    INNER JOIN TOAST.GTM.NEW_BUSINESS_OPPORTUNITY AS opp ON ost.salesforce_opportunityid = opp.salesforce_opportunityid
+    INNER JOIN TOAST.ANALYTICS_CORE.CUSTOMER_LOCATIONS AS cl ON opp.customer_id = cl.customer_id
+    INNER JOIN TOAST.ANALYTICS_CORE.CUSTOMER AS customer ON opp.customer_id = customer.customer_id
+WHERE
+    opp.ecommerce_order_reference_id IS NOT NULL
+    AND stage_thirteen IS NOT NULL
+    AND stage_sixteen IS NOT NULL
+    AND closed_lost_opportunity = false --AND booked_to_workable_days < ##

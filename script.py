@@ -8,6 +8,9 @@ giactPassAndFail = set()
 # giact passed but no COMPLETED in task statuses
 giactPassedButTaskNotCompleted = {}
 
+# go-live task is COMPLETED but booked to workable days is less than zero
+liveButBookedToWorkableMissing = {}
+
 
 def bankingStatusFromTaskStatuses(taskStatusesSet):
     # TODO: What to do about 'CANCELED'
@@ -35,15 +38,20 @@ def checkForAnomalies(row):
     if row['Passed Auto GIACT'] == 'Yes' and 'COMPLETED' not in taskStatusesSet:
         giactPassedButTaskNotCompleted[row['Customer Account Toast Guid']] = row['Banking Task Statuses']
 
+    if row['Go Live Status'] == 'COMPLETED' and int(row['Booked to Workable Days']) < 0:
+        liveButBookedToWorkableMissing[row['Customer Account Toast Guid']] = row['Booked to Workable Days']
+
 
 inputFile = 'data/AlleCommProspectAccountsWithGUIDS - explore_gtm all_opps 2023-04-11T1016.csv'
 bankingTaskStatusFile = 'data/provide-location-banking-info most recent revision.csv'  # run data/queries/snowflake/provide-location-banking-info--most-recent-revision and export to CSV
 goliveTaskStatusFile = 'data/self-service-leave-test-mode most recent revision.csv'  # run data/queries/snowflake/self-service-leave-test-mode--most-recent-revision and export to CSV
 giactResultsFile = 'data/giact-results-ytd-2-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
+bookedToWorkableResultsFile = 'data/booked-to-workable-timing.csv'  # run data/queries/booked-to-workable-timing and export to CSV
 
 rxToBankingStatus = {}
 rxToLiveStatus = {}
 rxToGiactResults = {}
+rxToBookedToWorkableDays = {}
 
 # create a mapping of Rx GUID to all Task Statuses it has experienced
 # task statuses (if more than one) are lexicographically sorted, i.e. not sorted by order of occurrence
@@ -70,6 +78,13 @@ with open(giactResultsFile, mode='r') as infile:
             rxToGiactResults[row['merchantId']] = set()
         rxToGiactResults[row['merchantId']].add(row['res'])
 
+# create a mapping of Rx GUID to booked-to-workable timing in days
+with open(bookedToWorkableResultsFile, mode='r') as infile:
+    reader = csv.DictReader(infile)
+    next(reader)
+    for row in reader:
+        rxToBookedToWorkableDays[row['RESTAURANTID']] = row['BOOKED_TO_WORKABLE_DAYS']
+
 results = "results.csv"
 writerFieldNames = ['Customer Account Name',
                     'Opportunities Opportunity Created Date',
@@ -81,7 +96,8 @@ writerFieldNames = ['Customer Account Name',
                     'Failed Auto GIACT',
                     'Banking Status',
                     'Banking Task Statuses',
-                    'Go Live Status'
+                    'Go Live Status',
+                    'Booked to Workable Days'
                     ]
 
 with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
@@ -96,6 +112,7 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
         row['Banking Status'] = ""
         row['Banking Task Statuses'] = ""
         row['Go Live Status'] = ""
+        row['Booked to Workable Days'] = ""
 
         cxGuid = row['Customer Account Toast Guid']
 
@@ -124,6 +141,12 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
                 tempSet.add('COMPLETED')
                 row['Banking Status'] = bankingStatusFromTaskStatuses(tempSet)
 
+        # populate booked to workable days column
+        if cxGuid in rxToBookedToWorkableDays:
+            row['Booked to Workable Days'] = rxToBookedToWorkableDays[cxGuid]
+        else:
+            row['Booked to Workable Days'] = -1
+
         checkForAnomalies(row)
         writer.writerow(row)
 
@@ -133,3 +156,6 @@ print(giactPassAndFail, "\n")
 
 print("GIACT PASS BUT TASK NOT COMPLETED\n---")
 print(giactPassedButTaskNotCompleted, "\n")
+
+print("LIVE BUT BOOKED TO WORKABLE MISSING\n---")
+print(liveButBookedToWorkableMissing, "\n")
