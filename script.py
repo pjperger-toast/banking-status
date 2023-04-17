@@ -12,6 +12,9 @@ giactPassedButTaskNotCompleted = {}
 # go-live task is COMPLETED but booked to workable days is less than zero
 liveButBookedToWorkableMissing = {}
 
+# reached workable (stage 16) but banking task is incomplete
+workableButBankingIncomplete = {}
+
 
 def bankingStatusFromTaskStatuses(taskStatusesSet):
     # TODO: What to do about 'CANCELED'
@@ -41,6 +44,12 @@ def checkForAnomalies(row):
 
     if row['Go Live Status'] == 'COMPLETED' and int(row['Booked to Workable Days']) < 0:
         liveButBookedToWorkableMissing[row['Customer Account Toast Guid']] = row['Booked to Workable Days']
+
+    if int(row['Booked to Workable Days']) >= 0 and row['Banking Status'] != 'Completed':
+        oppDate = row['Opportunities Opportunity Created Date']
+        oppDate = datetime.strptime(oppDate, "%m/%d/%Y")
+        if oppDate.date() >= datetime.strptime("11/24/2022", "%m/%d/%Y").date():
+            workableButBankingIncomplete[row['Customer Account Toast Guid']] = row['Booked to Workable Days']
 
 
 inputFile = 'data/AlleCommProspectAccountsWithGUIDS - explore_gtm all_opps 2023-04-11T1016.csv'
@@ -164,3 +173,10 @@ print(giactPassedButTaskNotCompleted, "\n")
 
 print("LIVE BUT BOOKED TO WORKABLE MISSING\n---")
 print(liveButBookedToWorkableMissing, "\n")
+
+print("WORKABLE BUT BANKING INCOMPLETE (11/24/2022 and on)\n---")
+if len(workableButBankingIncomplete) > 20:
+    print(f"entries: {len(workableButBankingIncomplete)}")
+else:
+    print(workableButBankingIncomplete)
+print("\n")
