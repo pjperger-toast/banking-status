@@ -113,7 +113,6 @@ writerFieldNames = ['Customer Account Name',
 with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
     reader = csv.DictReader(infile)
     writer = csv.DictWriter(outfile, fieldnames=writerFieldNames)
-    _ = next(reader)
     writer.writeheader()
     for row in reader:
         # TODO: This is hacky!
