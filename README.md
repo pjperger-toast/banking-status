@@ -10,9 +10,14 @@ Until all of this data is in Looker it's a bit of a manual process to generate a
 As of this writing no additional pip packages are required but maybe that will change in the future, so it's best to use a virtual environment.
 
 ## Pull down the latest data
-1. Pull latest Ecomm opportunity data from [this Looker dashboard](https://toasttab.looker.com/looks/11009)
-   1. Drop results into `data/AlleCommProspectAccountsWithGUIDS.csv`
-   1. Note: Need to confirm specific export instructions with Jake Johnson, then update this README
+1. Pull latest Ecomm opportunity data from [this Look](https://toasttab.looker.com/looks/11009)
+   1. Download via the Gear icon > `Download`
+   1. Filename: Prospect-Buys-with-GUIDs.csv
+   1. Results: As displayed in the data table
+   1. Data values: Unformatted
+   1. Number of rows and columns to include: All results
+   1. Remove all sorts from query: Unchecked
+   1. Drop results into `data/Prospect-Buys-with-GUIDs.csv`
 1. Pull latest booked to workable timing from Snowflake
    1. Snowflake query to run is in `data/queries/snowflake/booked-to-workable-timing`
    1. Drop results into `data/booked-to-workable-timing.csv`

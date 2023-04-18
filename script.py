@@ -52,7 +52,7 @@ def checkForAnomalies(row):
             workableButBankingIncomplete[row['Customer Account Toast Guid']] = row['Booked to Workable Days']
 
 
-inputFile = 'data/AlleCommProspectAccountsWithGUIDS.csv'
+inputFile = 'data/Prospect-Buys-with-GUIDs.csv'
 bankingTaskStatusFile = 'data/provide-location-banking-info--most-recent-revision.csv'  # run data/queries/snowflake/provide-location-banking-info--most-recent-revision and export to CSV
 goliveTaskStatusFile = 'data/self-service-leave-test-mode--most-recent-revision.csv'  # run data/queries/snowflake/self-service-leave-test-mode--most-recent-revision and export to CSV
 giactResultsFile = 'data/giact-results-ytd-2-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
@@ -116,6 +116,16 @@ with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
     _ = next(reader)
     writer.writeheader()
     for row in reader:
+        # TODO: This is hacky!
+        # TODO: If new columns are added to the Look from which we export Opportunities,
+        # TODO: explicit support for them needs to be added to this script.
+        # TODO: While that's possible, new columns means the formulas in Google Sheets
+        # TODO: will need to be updated.
+        # TODO: In fact, we should probably also pop other unneeded rows such as Opportunities Total Software ARR
+        # TODO: to keep things clean.
+        row.pop('Opportunity Key Dates Current Stage')
+        row.pop('Accounts Is Churned? (Yes / No)')
+
         # add new rows
         row['Passed Auto GIACT'] = ""
         row['Failed Auto GIACT'] = ""
