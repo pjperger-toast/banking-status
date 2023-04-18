@@ -52,7 +52,7 @@ def checkForAnomalies(row):
             workableButBankingIncomplete[row['Customer Account Toast Guid']] = row['Booked to Workable Days']
 
 
-inputFile = 'data/AlleCommProspectAccountsWithGUIDS - explore_gtm all_opps 2023-04-11T1016.csv'
+inputFile = 'data/AlleCommProspectAccountsWithGUIDS.csv'
 bankingTaskStatusFile = 'data/provide-location-banking-info--most-recent-revision.csv'  # run data/queries/snowflake/provide-location-banking-info--most-recent-revision and export to CSV
 goliveTaskStatusFile = 'data/self-service-leave-test-mode--most-recent-revision.csv'  # run data/queries/snowflake/self-service-leave-test-mode--most-recent-revision and export to CSV
 giactResultsFile = 'data/giact-results-ytd-2-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
