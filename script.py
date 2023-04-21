@@ -55,7 +55,7 @@ def checkForAnomalies(row):
 inputFile = 'data/Prospect-Buys-with-GUIDs.csv'
 bankingTaskStatusFile = 'data/provide-location-banking-info--most-recent-revision.csv'  # run data/queries/snowflake/provide-location-banking-info--most-recent-revision and export to CSV
 goliveTaskStatusFile = 'data/self-service-leave-test-mode--most-recent-revision.csv'  # run data/queries/snowflake/self-service-leave-test-mode--most-recent-revision and export to CSV
-giactResultsFile = 'data/giact-results-ytd-2-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
+giactResultsFile = 'data/giact-results-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
 bookedToWorkableResultsFile = 'data/booked-to-workable-timing.csv'  # run data/queries/booked-to-workable-timing and export to CSV
 
 rxToBankingStatus = {}
