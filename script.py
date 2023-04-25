@@ -100,8 +100,6 @@ writerFieldNames = ['Customer Account Name',
                     'Opportunities Opportunity Created Date',
                     'Accounts Salesforce Account ID',
                     'Customer Account Toast Guid',
-                    'Opportunities Total Software ARR',
-                    'Opportunity Line Item Hardware Value',
                     'Passed Auto GIACT',
                     'Failed Auto GIACT',
                     'Banking Status',
@@ -112,19 +110,9 @@ writerFieldNames = ['Customer Account Name',
 
 with open(ecommOpps, mode='r') as infile, open(results, "w") as outfile:
     reader = csv.DictReader(infile)
-    writer = csv.DictWriter(outfile, fieldnames=writerFieldNames)
+    writer = csv.DictWriter(outfile, fieldnames=writerFieldNames, extrasaction='ignore')
     writer.writeheader()
     for row in reader:
-        # TODO: This is hacky!
-        # TODO: If new columns are added to the Look from which we export Opportunities,
-        # TODO: explicit support for them needs to be added to this script.
-        # TODO: While that's possible, new columns means the formulas in Google Sheets
-        # TODO: will need to be updated.
-        # TODO: In fact, we should probably also pop other unneeded rows such as Opportunities Total Software ARR
-        # TODO: to keep things clean.
-        row.pop('Opportunity Key Dates Current Stage')
-        row.pop('Accounts Is Churned? (Yes / No)')
-
         # add new rows
         row['Passed Auto GIACT'] = ""
         row['Failed Auto GIACT'] = ""
