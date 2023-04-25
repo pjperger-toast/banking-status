@@ -52,7 +52,7 @@ def checkForAnomalies(row):
             workableButBankingIncomplete[row['Customer Account Toast Guid']] = row['Booked to Workable Days']
 
 
-inputFile = 'data/Prospect-Buys-with-GUIDs.csv'
+ecommOpps = 'data/Prospect-Buys-with-GUIDs.csv'
 bankingTaskStatusFile = 'data/provide-location-banking-info--most-recent-revision.csv'  # run data/queries/snowflake/provide-location-banking-info--most-recent-revision and export to CSV
 goliveTaskStatusFile = 'data/self-service-leave-test-mode--most-recent-revision.csv'  # run data/queries/snowflake/self-service-leave-test-mode--most-recent-revision and export to CSV
 giactResultsFile = 'data/giact-results-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
@@ -110,7 +110,7 @@ writerFieldNames = ['Customer Account Name',
                     'Booked to Workable Days'
                     ]
 
-with open(inputFile, mode='r') as infile, open(results, "w") as outfile:
+with open(ecommOpps, mode='r') as infile, open(results, "w") as outfile:
     reader = csv.DictReader(infile)
     writer = csv.DictWriter(outfile, fieldnames=writerFieldNames)
     writer.writeheader()
