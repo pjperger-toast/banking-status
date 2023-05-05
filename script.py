@@ -67,14 +67,12 @@ rxToBookedToWorkableDays = {}
 # task statuses (if more than one) are lexicographically sorted, i.e. not sorted by order of occurrence
 with open(bankingTaskStatusFile, mode='r') as infile:
     reader = csv.DictReader(infile)
-    next(reader)
     for row in reader:
         rxToBankingStatus[row['RESTAURANTID']] = row['STATUSES']
 
 # create a mapping of Rx GUID to current go-live status
 with open(goliveTaskStatusFile, mode='r') as infile:
     reader = csv.DictReader(infile)
-    next(reader)
     for row in reader:
         rxToLiveStatus[row['RESTAURANTID']] = row['STATUSES']
 
@@ -91,7 +89,6 @@ with open(giactResultsFile, mode='r') as infile:
 # create a mapping of Rx GUID to booked-to-workable timing in days
 with open(bookedToWorkableResultsFile, mode='r') as infile:
     reader = csv.DictReader(infile)
-    next(reader)
     for row in reader:
         rxToBookedToWorkableDays[row['RESTAURANTID']] = row['BOOKED_TO_WORKABLE_DAYS']
 
