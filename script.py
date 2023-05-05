@@ -55,7 +55,8 @@ def checkForAnomalies(row):
 ecommOpps = 'data/Prospect-Buys-with-GUIDs.csv'
 bankingTaskStatusFile = 'data/provide-location-banking-info--most-recent-revision.csv'  # run data/queries/snowflake/provide-location-banking-info--most-recent-revision and export to CSV
 goliveTaskStatusFile = 'data/self-service-leave-test-mode--most-recent-revision.csv'  # run data/queries/snowflake/self-service-leave-test-mode--most-recent-revision and export to CSV
-giactResultsFile = 'data/giact-results-non-deduped.csv'  # run data/queries/splunk/giact-results-non-deduped and export to CSV
+giactResultsFiles = ['data/giact-nov22-apr23.csv',
+                     'data/giact-since-may.csv']  # run data/queries/splunk/giact-results-non-deduped and export to CSV(s)
 bookedToWorkableResultsFile = 'data/booked-to-workable-timing.csv'  # run data/queries/booked-to-workable-timing and export to CSV
 
 rxToBankingStatus = {}
@@ -77,14 +78,14 @@ with open(goliveTaskStatusFile, mode='r') as infile:
         rxToLiveStatus[row['RESTAURANTID']] = row['STATUSES']
 
 # create a mapping of Rx GUID to giact pass and/or fail events
-with open(giactResultsFile, mode='r') as infile:
-    reader = csv.DictReader(infile)
-    next(reader)
-    for row in reader:
-        # res == 'pass' or 'fail'
-        if row['merchantId'] not in rxToGiactResults.keys():
-            rxToGiactResults[row['merchantId']] = set()
-        rxToGiactResults[row['merchantId']].add(row['res'])
+for giactResultsFile in giactResultsFiles:
+    with open(giactResultsFile, mode='r') as infile:
+        reader = csv.DictReader(infile)
+        for row in reader:
+            # res == 'pass' or 'fail'
+            if row['merchantId'] not in rxToGiactResults.keys():
+                rxToGiactResults[row['merchantId']] = set()
+            rxToGiactResults[row['merchantId']].add(row['res'])
 
 # create a mapping of Rx GUID to booked-to-workable timing in days
 with open(bookedToWorkableResultsFile, mode='r') as infile:
