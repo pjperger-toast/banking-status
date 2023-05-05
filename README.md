@@ -12,7 +12,8 @@ As of this writing no additional pip packages are required but maybe that will c
 ## Pull down the latest data
 1. Pull latest Ecomm opportunity data from [this Look](https://toasttab.looker.com/looks/11009)
    1. Download via the Gear icon > `Download`
-   1. Filename: Prospect-Buys-with-GUIDs.csv
+   1. Format: CSV
+   1. Filename: Prospect-Buys-with-GUIDs (Looker will auto-append `.csv`)
    1. Results: As displayed in the data table
    1. Data values: Unformatted
    1. Number of rows and columns to include: All results
@@ -29,8 +30,8 @@ As of this writing no additional pip packages are required but maybe that will c
    1. Drop results into `data/self-service-leave-test-mode--most-recent-revision.csv`
 1. Pull latest GIACT pass/fail event data from Splunk
    1. Splunk query to run is in `data/queries/splunk/giact-results-non-deduped`
-   1. GIACT was introduced in November 2022 so set the date range to ~11/01/2022 to present
-   1. Drop results into `data/giact-results-ytd-2-non-deduped.csv`
+   1. GIACT was introduced in November 2022 so set the date range to ~11/01/2022 to present. You may want to break it into chunks of files since the larger the date range, the more likely Splunk is to fail.
+   1. Drop results into the relevant file names (see script).
 
 ## Run the script
 1. Run `./script.py`
@@ -59,3 +60,4 @@ As of this writing no additional pip packages are required but maybe that will c
 1. If Google Sheets is being weird
    1. Ensure the named ranges are in place `Data > Named ranges`
    1. Ensure you changed the format of the specified columns (see above) after importing the data
+   1. Ensure there are no blank rows at the bottom of the source sheet.
